@@ -1,26 +1,33 @@
+import java.io.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Scanner;
 import org.roaringbitmap.RoaringBitmap;
+import main.RoaringBitmapIndexExample;
 
 public class Main {
 
-    public static void main(String[] args) {
-        RoaringBitmap rr = RoaringBitmap.bitmapOf(1,2,3,1000);
-        RoaringBitmap rr2 = new RoaringBitmap();
-        rr2.add(4000L,4255L);
-        rr.select(3); // would return the third value or 1000
-        rr.rank(2); // would return the rank of 2, which is index 1
-        rr.contains(1000); // will return true
-        rr.contains(7); // will return false
+    public static void main(String[] args) throws Exception{
 
-        RoaringBitmap rror = RoaringBitmap.or(rr, rr2);// new bitmap
-        rr.or(rr2); //in-place computation
-        boolean equals = rror.equals(rr);// true
-        if(!equals) throw new RuntimeException("bug");
-        // number of values stored?
-        long cardinality = rr.getLongCardinality();
-        System.out.println(cardinality);
-        // a "forEach" is faster than this loop, but a loop is possible:
-        for(int i : rr) {
-            System.out.println(i);
+        String fileName = "src/datasets/census1881.csv";
+        Map<String, RoaringBitmap> bitmapIndex = RoaringBitmapIndexExample.createRoaringBitmapIndex(fileName); // Colonna 'name' (indice 1)
+
+        double sum = 0;
+        double count = 0;
+
+        // Stampa del Roaring Bitmap Index
+        for (Map.Entry<String, RoaringBitmap> entry : bitmapIndex.entrySet()) {
+            RoaringBitmap bitmap = entry.getValue();
+            int max=0;
+            for(int i : bitmap) {
+                if(i > max) max=i;
+            }
+            sum += (double)bitmap.getCardinality()/(double) max;;
+            count++;
         }
+        System.out.println("Sum: " + sum);
+        System.out.println("Count: " + count);
+        System.out.println("Average: " + sum/count);
+
     }
 }
