@@ -1,33 +1,79 @@
-import java.io.*;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
+
+import main.BitSetIndex;
 import org.roaringbitmap.RoaringBitmap;
-import main.RoaringBitmapIndexExample;
+import main.RoaringBitmapIndex;
 
 public class Main {
 
     public static void main(String[] args) throws Exception{
 
-        String fileName = "src/datasets/census1881.csv";
-        Map<String, RoaringBitmap> bitmapIndex = RoaringBitmapIndexExample.createRoaringBitmapIndex(fileName); // Colonna 'name' (indice 1)
+        String path="src/datasets/";
+        String[] fileNames ={"census-income.data","wikileaks.csv","weather_sept_85.csv"};
+        /*
+        for(int i=0; i< fileNames.length;i++) {
+            RoaringBitmapIndex roaringIndex =new RoaringBitmapIndex(path+fileNames[i]);
 
-        double sum = 0;
-        double count = 0;
+            double density = roaringIndex.calculateDensity();
 
-        // Stampa del Roaring Bitmap Index
-        for (Map.Entry<String, RoaringBitmap> entry : bitmapIndex.entrySet()) {
-            RoaringBitmap bitmap = entry.getValue();
-            int max=0;
-            for(int i : bitmap) {
-                if(i > max) max=i;
-            }
-            sum += (double)bitmap.getCardinality()/(double) max;;
-            count++;
+            System.out.println("Density: " + density);
+
+            double size = roaringIndex.calculateSpacePerItem();
+            System.out.println("Size: " + size);
         }
-        System.out.println("Sum: " + sum);
-        System.out.println("Count: " + count);
-        System.out.println("Average: " + sum/count);
 
+        System.out.println("---------------");
+        for(int i=0; i< fileNames.length;i++) {
+            BitSetIndex roaringIndex =new BitSetIndex(path+fileNames[i]);
+
+            double density = roaringIndex.calculateDensity();
+
+            System.out.println("Density: " + density);
+
+            double size = roaringIndex.calculateSpacePerItem();
+            System.out.println("Size: " + size);
+        }
+        */
+
+        int n = 1000000;
+        double density = 0.001;
+
+        List<Integer> uniformSet = generateUniformSet(n, density);
+        System.out.println("Densità effettiva: " + (double) uniformSet.size() / n);
+        System.out.println(uniformSet.size() + " " + n);
+        RoaringBitmap roaringBitmap = new RoaringBitmap();
+        for (int elem : uniformSet) {
+            roaringBitmap.add(elem);
+        }
+        System.out.println("Densità effettiva: " + (double) roaringBitmap.getCardinality() / roaringBitmap.last());
+        System.out.println(roaringBitmap.getCardinality() + " " + roaringBitmap.last());
+        BitSet bitset = new BitSet();
+        for (int elem : uniformSet) {
+            bitset.set(elem);
+        }
+        System.out.println("Densità effettiva: " + (double) bitset.cardinality() / bitset.length());
+        System.out.println(bitset.cardinality() + " " + bitset.length());
     }
+
+    private static String getRandomKey(Map<String, RoaringBitmap> map) {
+        Random random = new Random();
+
+        String[] groups = map.keySet().toArray(new String[0]);
+
+        return groups[random.nextInt(groups.length)];
+    }
+
+    public static List<Integer> generateUniformSet(int n, double density) {
+        Random random = new Random();
+        List<Integer> resultList = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            if (random.nextDouble() < density) {
+                resultList.add(i); // Aggiunge l'indice con probabilità data dalla densità
+            }
+        }
+
+        return resultList;
+    }
+
 }
