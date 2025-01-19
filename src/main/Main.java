@@ -15,12 +15,13 @@ public class Main {
     }
 
     public static void syntheticTest() {
-        int n = 100;
-        int numberOfTests=2;
+        int n = 100000;
+        int numberOfTests=1;
 
-        new Tester(n,numberOfTests,1).test();
-        new Tester(n,numberOfTests,2).test();
-        new Tester(n,numberOfTests,3).test();
+        new Tester(n,numberOfTests,1,1).test();
+        new Tester(n,numberOfTests,2,1).test();
+        new Tester(n,numberOfTests,3,1).test();
+        new Tester(n,numberOfTests,4,1).test();
 
     }
 
